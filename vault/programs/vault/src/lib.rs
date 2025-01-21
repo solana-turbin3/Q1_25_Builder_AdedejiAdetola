@@ -23,6 +23,11 @@ pub mod vault {
         ctx.accounts.withdraw(amount)?;
         Ok(())
     }
+
+    pub fn close(ctx: Context<Close>) -> Result<()> {
+        ctx.accounts.close()?;
+        Ok(())
+    }
 }
 
 #[account]
@@ -125,6 +130,8 @@ pub struct Withdraw<'info> {
 }
 
 
+// to withdraw a specific amount
+
 impl<'info> Withdraw<'info> {
     pub fn withdraw(&mut self, amount: u64) -> Result<()> {
         let system_program = self.system_program.to_account_info();
@@ -141,3 +148,60 @@ impl<'info> Withdraw<'info> {
         Ok(())
     }
 } 
+
+//to withdraw everything
+
+// impl<'info> Withdraw<'info> {
+//     pub fn withdraw(&mut self) -> Result<()> {
+//         let system_program = self.system_program.to_account_info();
+
+//         let accounts = Transfer{
+//             from: self.vault.to_account_info(),
+//             to: self.signer.to_account_info(),
+//         };
+
+//         let cpi_ctx = CpiContext::new(system_program, accounts);
+
+//         transfer(cpi_ctx, self.vault.lamports())?;
+//         Ok(())
+//     }
+// } 
+
+#[derive(Accounts)]
+pub struct Close<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    #[account(
+        mut,
+        seeds = [b"state", signer.key().as_ref()],
+        bump = vault_state.state_bump,
+        close = signer
+    )]
+    pub vault_state: Account<'info, VaultState>,
+    #[account(
+        mut,
+        seeds = [vault_state.key().as_ref()],
+        bump = vault_state.vault_bump
+    )]
+    pub vault: SystemAccount<'info>,
+    pub system_program: Program<'info, System>
+}
+
+impl<'info> Close<'info> {
+    pub fn close(&mut self) -> Result<()> {
+        // First, ensure the vault is empty
+        let vault_balance = self.vault.lamports();
+        if vault_balance > 0 {
+            // If there are remaining funds, transfer them back to the signer
+            let system_program = self.system_program.to_account_info();
+            let accounts = Transfer {
+                from: self.vault.to_account_info(),
+                to: self.signer.to_account_info(),
+            };
+            let cpi_ctx = CpiContext::new(system_program, accounts);
+            transfer(cpi_ctx, vault_balance)?;
+        }
+        
+        Ok(())
+    }
+}
