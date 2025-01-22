@@ -121,6 +121,7 @@ pub struct Withdraw<'info> {
     pub vault_state: Account<'info, VaultState>,
 
     #[account(
+        mut, //are we really supposed to use mut, do we need to?
         seeds = [vault_state.key().as_ref()],
         bump = vault_state.vault_bump
     )]
@@ -211,8 +212,20 @@ impl<'info> Close<'info> {
                 from: self.vault.to_account_info(),
                 to: self.signer.to_account_info(),
             };
-            let cpi_ctx = CpiContext::new(system_program, accounts);
-            transfer(cpi_ctx, vault_balance)?;
+            // Create signer seeds for the vault PDA
+                let seeds = &[b"vault",
+                self.vault_state.to_account_info().key.as_ref(),
+                &[self.vault_state.vault_bump],
+            ];
+
+            let vault_seeds = &[&seeds[..]];
+
+            let cpi_ctx = CpiContext::new_with_signer(
+                system_program,
+                accounts,
+                vault_seeds
+            );
+            transfer(cpi_ctx, vault_balance)?; //you are closing the vault here since it is a system account, 
         }
         
         Ok(())
