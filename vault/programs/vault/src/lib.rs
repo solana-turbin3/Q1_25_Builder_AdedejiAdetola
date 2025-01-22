@@ -135,13 +135,26 @@ pub struct Withdraw<'info> {
 impl<'info> Withdraw<'info> {
     pub fn withdraw(&mut self, amount: u64) -> Result<()> {
         let system_program = self.system_program.to_account_info();
+        
 
         let accounts = Transfer{
             from: self.vault.to_account_info(),
             to: self.signer.to_account_info(),
         };
 
-        let cpi_ctx = CpiContext::new(system_program, accounts);
+        // Create signer seeds for the vault PDA
+        let seeds = &[b"vault",
+            self.vault_state.to_account_info().key.as_ref(),
+            &[self.vault_state.vault_bump],
+        ];
+
+        let vault_seeds = &[&seeds[..]];
+
+        let cpi_ctx = CpiContext::new_with_signer(
+            system_program,
+            accounts,
+            vault_seeds
+        );
         assert!(self.vault.lamports() >= amount);
 
         transfer(cpi_ctx, amount)?;
