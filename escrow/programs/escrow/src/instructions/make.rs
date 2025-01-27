@@ -15,6 +15,8 @@ pub struct Make<'info>{
     pub mint_a: InterfaceAccount<'info, Mint>, //interface account allows you to accept token from  normal program and a token 2022 program
     pub mint_b: InterfaceAccount<'info, Mint>, //why do we need mint_b here?
 
+    //probably because we need to initialize them in both accounts
+
     //below we store the mint in the associated token account of the maker
     #[account(
         mut,
