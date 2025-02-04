@@ -1,14 +1,17 @@
 //initialize and send tokens to vault
 
 use anchor_lang::prelude::*;
-use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked}};
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked},
+};
 
 use crate::EscrowState;
 
 #[derive(Accounts)] //defines the account context
 #[instruction(seed: u64)] //allows you access your instruction arguments in your accounts struct
 
-pub struct Make<'info>{
+pub struct Make<'info> {
     //we initially need signer and mints
     #[account(mut)]
     pub maker: Signer<'info>,
@@ -42,7 +45,6 @@ pub struct Make<'info>{
     //the vault here is an ata
 
     //initializing token account for escrow
-
     #[account(
         init,
         payer=maker,
@@ -54,8 +56,7 @@ pub struct Make<'info>{
     //3 programs below
     pub system_program: Program<'info, System>, //creating pda
     pub associated_token_program: Program<'info, AssociatedToken>, //creating associated token account
-    pub token_program: Interface<'info, TokenInterface>, //transferring tokens from maker (mint_a_ata) to escrow (vault) 
-
+    pub token_program: Interface<'info, TokenInterface>, //transferring tokens from maker (mint_a_ata) to escrow (vault)
 }
 
 impl<'info> Make<'info> {
@@ -65,8 +66,7 @@ impl<'info> Make<'info> {
         receive_amount: u64,
         bumps: MakeBumps, //why makebumps?
     ) -> Result<()> {
-
-        //hema said, all structs have set_inner by defauly
+        //hema said, all structs have set_inner by default
 
         self.escrow.set_inner(EscrowState {
             seed,
@@ -74,29 +74,26 @@ impl<'info> Make<'info> {
             maker: self.maker.key(),
             mint_a: self.mint_a.key(),
             mint_b: self.mint_b.key(),
-            bump: bumps.escrow //why bumps.escrow?
+            bump: bumps.escrow, //why bumps.escrow?
         });
         Ok(())
     }
 
-    pub fn deposit(&mut self, amount:u64) -> Result<()> {
+    pub fn deposit(&mut self, amount: u64) -> Result<()> {
         let cpi_program = self.token_program.to_account_info(); //we are using token progam here instead of system_program because we are transferring tokens and not sol
-        //does this mean that we can transfer 
+                                                                //does this mean that we can transfer
 
-
-        let cpi_accounts= TransferChecked{
+        let cpi_accounts = TransferChecked {
             from: self.maker_ata_a.to_account_info(),
-            mint:self.mint_a.to_account_info(),
-            to:self.vault.to_account_info(),
-            authority: self.maker.to_account_info()
+            mint: self.mint_a.to_account_info(),
+            to: self.vault.to_account_info(),
+            authority: self.maker.to_account_info(),
         };
 
         let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-        
-        
+
         transfer_checked(cpi_ctx, amount, self.mint_a.decimals)?;
-        
+
         Ok(())
     }
 }
-

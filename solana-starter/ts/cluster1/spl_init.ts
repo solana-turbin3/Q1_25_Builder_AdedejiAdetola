@@ -18,3 +18,5 @@ const connection = new Connection("https://api.devnet.solana.com", commitment);
         console.log(`Oops, something went wrong: ${error}`)
     }
 })()
+
+

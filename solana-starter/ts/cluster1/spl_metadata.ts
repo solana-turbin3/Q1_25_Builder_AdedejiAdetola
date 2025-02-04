@@ -1,14 +1,14 @@
 import wallet from "../Turbin3-wallet.json"
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
-import { 
-    createMetadataAccountV3, 
-    CreateMetadataAccountV3InstructionAccounts, 
+import {
+    createMetadataAccountV3,
+    CreateMetadataAccountV3InstructionAccounts,
     CreateMetadataAccountV3InstructionArgs,
     DataV2Args
 } from "@metaplex-foundation/mpl-token-metadata";
 import { createSignerFromKeypair, signerIdentity, publicKey } from "@metaplex-foundation/umi";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import { PublicKey } from "@solana/web3.js";
+// import { PublicKey } from "@solana/web3.js";
 
 
 
@@ -57,7 +57,7 @@ umi.use(signerIdentity(createSignerFromKeypair(umi, keypair)));
 
         let result = await tx.sendAndConfirm(umi);
         console.log(bs58.encode(result.signature));
-    } catch(e) {
+    } catch (e) {
         console.error(`Oops, something went wrong: ${e}`)
     }
 })();
