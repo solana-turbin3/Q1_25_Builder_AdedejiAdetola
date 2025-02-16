@@ -9,6 +9,8 @@ pub struct DaoverseConfig {
     pub dao_creation_fee: u64,
     pub bump: u8,
     pub daoverse_treasury_balance: u64,
-    // pub admin_name: String?,
-    // pub daoverse_description: String?
+    #[max_len(32)]
+    pub admin_name: String,
+    #[max_len(200)]
+    pub daoverse_description: String,
 }

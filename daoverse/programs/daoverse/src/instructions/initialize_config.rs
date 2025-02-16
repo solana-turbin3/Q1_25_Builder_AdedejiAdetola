@@ -7,7 +7,7 @@ use anchor_spl::{
 };
 
 #[derive(Accounts)]
-pub struct InitializeConfig<'info> {
+pub struct InitializeDaoverse<'info> {
     // admin
     #[account(mut)]
     pub admin: Signer<'info>,
@@ -35,14 +35,60 @@ pub struct InitializeConfig<'info> {
     pub token_program: Interface<'info, TokenInterface>,
 }
 
-impl<'info> InitializeConfig<'info> {
-    pub fn initialize_config(&mut self, bumps: InitializeConfigBumps, dao_creation_fee: u64) {
+impl<'info> InitializeDaoverse<'info> {
+    pub fn initialize_daoverse(
+        &mut self,
+        bumps: InitializeDaoverseBumps,
+        dao_creation_fee: u64,
+        admin_name: String,
+        daoverse_description: String,
+    ) {
         self.daoverse_config.set_inner(DaoverseConfig {
             admin: self.admin.key(),
             daoverse_mint: self.daoverse_mint.key(),
             dao_creation_fee,
             bump: bumps.daoverse_config,
             daoverse_treasury_balance: 0,
+            admin_name,
+            daoverse_description,
         });
     }
+
+    pub fn update_daoverse(
+        &mut self,
+        new_dao_creation_fee: Option<u64>,
+        new_admin_name: Option<String>,
+        new_daoverse_description: Option<String>,
+    ) -> Result<()> {
+        // Update dao creation fee if provided
+        if let Some(fee) = new_dao_creation_fee {
+            self.daoverse_config.dao_creation_fee = fee;
+        }
+
+        // Update admin name if provided
+        if let Some(name) = new_admin_name {
+            require!(name.len() <= 32, ErrorCode::StringTooLong);
+            self.daoverse_config.admin_name = name;
+        }
+
+        // Update daoverse description if provided
+        if let Some(description) = new_daoverse_description {
+            require!(description.len() <= 200, ErrorCode::StringTooLong);
+            self.daoverse_config.daoverse_description = description;
+        }
+
+        // Update treasury balance
+        self.daoverse_config.daoverse_treasury_balance = self.daoverse_treasury.amount;
+
+        Ok(())
+    }
+}
+
+// Add these error codes to your error.rs file
+#[error_code]
+pub enum ErrorCode {
+    #[msg("Unauthorized access")]
+    Unauthorized,
+    #[msg("String exceeds maximum length")]
+    StringTooLong,
 }

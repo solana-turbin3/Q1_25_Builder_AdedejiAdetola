@@ -11,8 +11,29 @@ pub use instructions::*;
 pub mod daoverse {
     use super::*;
 
-    pub fn initialize_config(ctx: Context<InitializeConfig>, dao_creation_fee: u64) -> Result<()> {
-        ctx.accounts.initialize_config(ctx.bumps, dao_creation_fee);
+    pub fn initialize_daoverse(
+        ctx: Context<InitializeDaoverse>,
+        dao_creation_fee: u64,
+        admin_name: String,
+        daoverse_description: String,
+    ) -> Result<()> {
+        ctx.accounts.initialize_daoverse(
+            ctx.bumps,
+            dao_creation_fee,
+            admin_name,
+            daoverse_description,
+        );
+        Ok(())
+    }
+
+    pub fn update_daoverse(
+        ctx: Context<UpdateDaoverse>,
+        dao_creation_fee: u64,
+        admin_name: String,
+        daoverse_description: String,
+    ) -> Result<()> {
+        ctx.accounts
+            .update_daoverse(dao_creation_fee, admin_name, daoverse_description);
         Ok(())
     }
 }
