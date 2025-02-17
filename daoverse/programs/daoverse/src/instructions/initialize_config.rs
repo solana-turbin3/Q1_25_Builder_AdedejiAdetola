@@ -1,9 +1,10 @@
+use crate::errors::ErrorCode;
 use crate::state::DaoverseConfig;
 use anchor_lang::prelude::*;
 
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token_interface::{Mint, TokenAccount, TokenInterface},
+    token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked},
 };
 
 #[derive(Accounts)]
@@ -20,6 +21,14 @@ pub struct InitializeDaoverse<'info> {
         bump
     )]
     pub daoverse_config: Account<'info, DaoverseConfig>,
+
+    //admin ata
+    #[account(
+        mut,
+        associated_token::mint=daoverse_mint,
+        associated_token::authority=admin,
+    )]
+    pub admin_ata: InterfaceAccount<'info, TokenAccount>,
 
     // daoverse treasury
     #[account(
@@ -54,41 +63,27 @@ impl<'info> InitializeDaoverse<'info> {
         });
     }
 
-    pub fn update_daoverse(
-        &mut self,
-        new_dao_creation_fee: Option<u64>,
-        new_admin_name: Option<String>,
-        new_daoverse_description: Option<String>,
-    ) -> Result<()> {
-        // Update dao creation fee if provided
-        if let Some(fee) = new_dao_creation_fee {
-            self.daoverse_config.dao_creation_fee = fee;
-        }
+    pub fn admin_deposit(&mut self, amount: u64) -> Result<()> {
+        let cpi_program = self.token_program.to_account_info();
 
-        // Update admin name if provided
-        if let Some(name) = new_admin_name {
-            require!(name.len() <= 32, ErrorCode::StringTooLong);
-            self.daoverse_config.admin_name = name;
-        }
+        let cpi_accounts = TransferChecked {
+            from: self.admin_ata.to_account_info(),
+            mint: self.daoverse_mint.to_account_info(),
+            to: self.daoverse_treasury.to_account_info(),
+            authority: self.admin.to_account_info(),
+        };
 
-        // Update daoverse description if provided
-        if let Some(description) = new_daoverse_description {
-            require!(description.len() <= 200, ErrorCode::StringTooLong);
-            self.daoverse_config.daoverse_description = description;
-        }
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
 
-        // Update treasury balance
-        self.daoverse_config.daoverse_treasury_balance = self.daoverse_treasury.amount;
+        transfer_checked(cpi_ctx, amount, self.daoverse_mint.decimals)?;
+
+        // Update treasury balance in DaoverseConfig
+        self.daoverse_config.daoverse_treasury_balance = self
+            .daoverse_config
+            .daoverse_treasury_balance
+            .checked_add(amount)
+            .ok_or(ErrorCode::Overflow)?;
 
         Ok(())
     }
-}
-
-// Add these error codes to your error.rs file
-#[error_code]
-pub enum ErrorCode {
-    #[msg("Unauthorized access")]
-    Unauthorized,
-    #[msg("String exceeds maximum length")]
-    StringTooLong,
 }
