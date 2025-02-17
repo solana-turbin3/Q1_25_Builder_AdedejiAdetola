@@ -17,10 +17,10 @@ pub struct InitializeDaoverse<'info> {
         init,
         payer = admin,
         space = 8 + DaoverseConfig::INIT_SPACE,
-        seeds = [b"daoverse_config".as_ref()],
+        seeds = [b"daoverse".as_ref()],
         bump
     )]
-    pub daoverse_config: Account<'info, DaoverseConfig>,
+    pub daoverse: Account<'info, DaoverseConfig>,
 
     //admin ata
     #[account(
@@ -35,7 +35,7 @@ pub struct InitializeDaoverse<'info> {
         init,
         payer = admin,
         associated_token::mint = daoverse_mint,
-        associated_token::authority = daoverse_config,
+        associated_token::authority = daoverse,
     )]
     pub daoverse_treasury: InterfaceAccount<'info, TokenAccount>,
 
@@ -52,11 +52,11 @@ impl<'info> InitializeDaoverse<'info> {
         admin_name: String,
         daoverse_description: String,
     ) {
-        self.daoverse_config.set_inner(DaoverseConfig {
+        self.daoverse.set_inner(DaoverseConfig {
             admin: self.admin.key(),
             daoverse_mint: self.daoverse_mint.key(),
             dao_creation_fee,
-            bump: bumps.daoverse_config,
+            bump: bumps.daoverse,
             daoverse_treasury_balance: 0,
             admin_name,
             daoverse_description,
@@ -78,8 +78,8 @@ impl<'info> InitializeDaoverse<'info> {
         transfer_checked(cpi_ctx, amount, self.daoverse_mint.decimals)?;
 
         // Update treasury balance in DaoverseConfig
-        self.daoverse_config.daoverse_treasury_balance = self
-            .daoverse_config
+        self.daoverse.daoverse_treasury_balance = self
+            .daoverse
             .daoverse_treasury_balance
             .checked_add(amount)
             .ok_or(ErrorCode::Overflow)?;

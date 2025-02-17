@@ -8,17 +8,18 @@ use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 pub struct UpdateDaoverse<'info> {
     // Only admin can update
     #[account(
-        address = daoverse_config.admin @ ErrorCode::Unauthorized
+        mut,
+        address = daoverse.admin @ ErrorCode::Unauthorized
     )]
     pub admin: Signer<'info>,
 
     // Config account - no init since it exists
     #[account(
         mut,
-        seeds = [b"daoverse_config".as_ref()],
-        bump = daoverse_config.bump,
+        seeds = [b"daoverse".as_ref()],
+        bump = daoverse.bump,
     )]
-    pub daoverse_config: Account<'info, DaoverseConfig>,
+    pub daoverse: Account<'info, DaoverseConfig>,
 
     pub daoverse_mint: InterfaceAccount<'info, Mint>,
 
@@ -26,7 +27,7 @@ pub struct UpdateDaoverse<'info> {
     #[account(
         mut,
         associated_token::mint = daoverse_mint,
-        associated_token::authority = daoverse_config,
+        associated_token::authority = daoverse,
     )]
     pub daoverse_treasury: InterfaceAccount<'info, TokenAccount>,
 
@@ -42,23 +43,23 @@ impl<'info> UpdateDaoverse<'info> {
     ) -> Result<()> {
         // Update dao creation fee if provided
         if let Some(fee) = dao_creation_fee {
-            self.daoverse_config.dao_creation_fee = fee;
+            self.daoverse.dao_creation_fee = fee;
         }
 
         // Update admin name if provided
         if let Some(name) = admin_name {
             require!(name.len() <= 32, ErrorCode::StringTooLong);
-            self.daoverse_config.admin_name = name;
+            self.daoverse.admin_name = name;
         }
 
         // Update daoverse description if provided
         if let Some(description) = daoverse_description {
             require!(description.len() <= 200, ErrorCode::StringTooLong);
-            self.daoverse_config.daoverse_description = description;
+            self.daoverse.daoverse_description = description;
         }
 
         // Update treasury balance
-        self.daoverse_config.daoverse_treasury_balance = self.daoverse_treasury.amount;
+        self.daoverse.daoverse_treasury_balance = self.daoverse_treasury.amount;
 
         Ok(())
     }
