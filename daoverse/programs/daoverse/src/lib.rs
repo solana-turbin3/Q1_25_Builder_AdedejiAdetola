@@ -49,6 +49,7 @@ pub mod daoverse {
     pub fn initialize_dao(
         ctx: Context<CreateDao>,
         seed: u64,
+        amount: u64,
         creator_name: String,
         creator_description: String,
         governance_model: dao_config::GovernanceModel,
@@ -73,6 +74,9 @@ pub mod daoverse {
             reward_model,
             voting_threshold,
         );
+
+        //Dao creator deposit
+        ctx.accounts.dao_creator_deposit(amount)?;
 
         Ok(())
     }
