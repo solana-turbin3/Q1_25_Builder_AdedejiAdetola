@@ -139,4 +139,28 @@ impl<'info> CreateDao<'info> {
             voting_threshold,
         });
     }
+
+    pub fn dao_creator_deposit(&mut self, amount: u64) -> Result<()> {
+        let cpi_program = self.token_program.to_account_info();
+
+        let cpi_accounts = TransferChecked {
+            from: self.creator_dao_ata.to_account_info(),
+            mint: self.dao_mint.to_account_info(),
+            to: self.dao_treasury.to_account_info(),
+            authority: self.dao.to_account_info(),
+        };
+
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+
+        transfer_checked(cpi_ctx, amount, self.daoverse_mint.decimals)?;
+
+        // Update treasury balance in DaoverseConfig
+        self.dao.dao_treasury_balance = self
+            .dao
+            .dao_treasury_balance
+            .checked_add(amount)
+            .ok_or(ErrorCode::Overflow)?;
+
+        Ok(())
+    }
 }
