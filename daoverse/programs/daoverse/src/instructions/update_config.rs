@@ -18,6 +18,7 @@ pub struct UpdateDaoverse<'info> {
         mut,
         seeds = [b"daoverse".as_ref()],
         bump = daoverse.bump,
+        has_one = daoverse_mint @ ErrorCode::Unauthorized
     )]
     pub daoverse: Account<'info, DaoverseConfig>,
 

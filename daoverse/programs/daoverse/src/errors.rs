@@ -9,4 +9,10 @@ pub enum ErrorCode {
     StringTooLong,
     #[msg("Cant update daoverse treasury balance")]
     Overflow,
+    #[msg("Cant update daoverse treasury balance")]
+    InsufficientDaoverseTokens,
+    #[msg("Invalid threshold parameters")]
+    InvalidThreshold,
+    #[msg("Invalid voting period configuration")]
+    InvalidVotingPeriod,
 }

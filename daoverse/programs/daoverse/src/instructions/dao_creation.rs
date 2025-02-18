@@ -56,7 +56,7 @@ pub struct CreateDao<'info> {
     //daoverse - authority of daoverse treasury
     #[account(
         mut,
-        has_one=daoverse_mint,
+        has_one = daoverse_mint,
         seeds = [b"daoverse".as_ref()],
         bump = daoverse.bump
     )]
@@ -74,6 +74,69 @@ pub struct CreateDao<'info> {
     pub token_program: Interface<'info, TokenInterface>,
 }
 
-//validate dao creator
-//pay daoverse fee
-//create dao
+impl<'info> CreateDao<'info> {
+    //validate dao creator
+    //to validate, creator_daoverse_ata amount is greater than 1000
+    pub fn validate_creator(&self) -> Result<()> {
+        if self.creator_daoverse_ata.amount < 1000 {
+            return err!(ErrorCode::InsufficientDaoverseTokens);
+        }
+        Ok(())
+    }
+
+    //pay daoverse fee
+    //daoverse fee is 500
+    pub fn pay_daoverse_fee(&mut self) -> Result<()> {
+        let cpi_program = self.token_program.to_account_info();
+
+        let cpi_accounts = TransferChecked {
+            from: self.creator_daoverse_ata.to_account_info(),
+            mint: self.daoverse_mint.to_account_info(),
+            to: self.daoverse_treasury.to_account_info(),
+            authority: self.creator.to_account_info(),
+        };
+
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+
+        transfer_checked(cpi_ctx, 500, self.daoverse_mint.decimals)?;
+
+        // Update daoverse treasury balance
+        self.daoverse.daoverse_treasury_balance = self
+            .daoverse
+            .daoverse_treasury_balance
+            .checked_add(500)
+            .ok_or(ErrorCode::Overflow)?;
+
+        Ok(())
+    }
+
+    //create dao
+    //initialize dao
+    pub fn create_dao(
+        &mut self,
+        bumps: CreateDaoBumps,
+        seed: u64,
+        creator_name: String,
+        creator_description: String,
+        governance_model: dao_config::GovernanceModel,
+        voting_model: dao_config::VotingModel,
+        reward_model: dao_config::RewardModel,
+        voting_threshold: dao_config::VotingThreshold,
+    ) {
+        self.dao.set_inner(DaoConfig {
+            seed,
+            dao_creator: self.creator.key(),
+            dao_mint: self.dao_mint.key(),
+            bump: bumps.dao,
+            dao_treasury_balance: 0,
+            creator_name,
+            creator_description,
+            total_proposals: 0,
+            approved_proposals: 0,
+            governance_model,
+            voting_model,
+            reward_model,
+            voting_threshold,
+        });
+    }
+}
