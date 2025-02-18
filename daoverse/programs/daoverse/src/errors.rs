@@ -11,8 +11,14 @@ pub enum ErrorCode {
     Overflow,
     #[msg("Cant update daoverse treasury balance")]
     InsufficientDaoverseTokens,
+    #[msg("Invalid Daoverese mint")]
+    InvalidDaoverseMint,
     #[msg("Invalid threshold parameters")]
     InvalidThreshold,
     #[msg("Invalid voting period configuration")]
     InvalidVotingPeriod,
+    #[msg("Insufficient Dao Tokens")]
+    InsufficientDaoTokens,
+    #[msg("Invalid Dao mint")]
+    InvalidDaoMint,
 }

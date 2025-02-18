@@ -9,8 +9,9 @@ pub struct UpdateDao<'info> {
 
     #[account(
         mut,
-        seeds = [b"dao", creator.key().as_ref(), dao.seed.to_le_bytes().as_ref()],
+        seeds = [b"dao", creator.key().as_ref(), dao.dao_seed.to_le_bytes().as_ref()],
         bump = dao.bump,
+        constraint = dao.dao_creator == creator.key()
     )]
     pub dao: Account<'info, DaoConfig>,
 }
@@ -18,8 +19,8 @@ pub struct UpdateDao<'info> {
 impl<'info> UpdateDao<'info> {
     pub fn update_dao(
         &mut self,
-        creator_name: Option<String>,
-        creator_description: Option<String>,
+        dao_name: Option<String>,
+        dao_description: Option<String>,
         governance_model: Option<dao_config::GovernanceModel>,
         voting_model: Option<dao_config::VotingModel>,
         reward_model: Option<dao_config::RewardModel>,
@@ -31,14 +32,14 @@ impl<'info> UpdateDao<'info> {
         require_keys_eq!(self.creator.key(), dao.dao_creator, ErrorCode::Unauthorized);
 
         // Update fields if new values are provided
-        if let Some(name) = creator_name {
+        if let Some(name) = dao_name {
             require!(name.len() <= 32, ErrorCode::StringTooLong);
-            dao.creator_name = name;
+            dao.dao_name = name;
         }
 
-        if let Some(description) = creator_description {
+        if let Some(description) = dao_description {
             require!(description.len() <= 200, ErrorCode::StringTooLong);
-            dao.creator_description = description;
+            dao.dao_description = description;
         }
 
         if let Some(governance) = governance_model {

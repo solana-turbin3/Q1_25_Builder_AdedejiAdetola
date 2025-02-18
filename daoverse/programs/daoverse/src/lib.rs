@@ -48,7 +48,7 @@ pub mod daoverse {
     //dao
     pub fn initialize_dao(
         ctx: Context<CreateDao>,
-        seed: u64,
+        dao_seed: u64,
         amount: u64,
         creator_name: String,
         creator_description: String,
@@ -66,7 +66,7 @@ pub mod daoverse {
         // Initialize DAO
         ctx.accounts.create_dao(
             ctx.bumps,
-            seed,
+            dao_seed,
             creator_name,
             creator_description,
             governance_model,
@@ -97,6 +97,37 @@ pub mod daoverse {
             voting_model,
             reward_model,
             voting_threshold,
+        )?;
+
+        Ok(())
+    }
+
+    //dao member
+    pub fn initialize_member(ctx: Context<InitializeMember>, member_seed: u64) -> Result<()> {
+        // Validate member has sufficient tokens
+        ctx.accounts.validate_member()?;
+
+        // Initialize member state
+        ctx.accounts.initialize_member(ctx.bumps, member_seed);
+
+        // Set initial balance
+        ctx.accounts.update_member_balance()?;
+
+        Ok(())
+    }
+
+    pub fn update_member(
+        ctx: Context<UpdateMember>,
+        created_proposals: Option<u64>,
+        approved_proposals: Option<u64>,
+        total_rewards: Option<u64>,
+        total_votes: Option<u64>,
+    ) -> Result<()> {
+        ctx.accounts.update_member(
+            created_proposals,
+            approved_proposals,
+            total_rewards,
+            total_votes,
         )?;
 
         Ok(())

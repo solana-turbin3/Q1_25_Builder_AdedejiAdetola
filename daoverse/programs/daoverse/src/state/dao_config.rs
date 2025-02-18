@@ -34,15 +34,15 @@ pub struct VotingThreshold {
 #[account]
 #[derive(InitSpace)]
 pub struct DaoConfig {
-    pub seed: u64,
+    pub dao_seed: u64,
     pub dao_creator: Pubkey,
     pub dao_mint: Pubkey,
     pub bump: u8,
     pub dao_treasury_balance: u64,
     #[max_len(32)]
-    pub creator_name: String,
+    pub dao_name: String,
     #[max_len(200)]
-    pub creator_description: String,
+    pub dao_description: String,
     pub total_proposals: u64,
     pub approved_proposals: u64,
     pub governance_model: GovernanceModel,
