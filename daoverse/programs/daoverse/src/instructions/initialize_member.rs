@@ -71,7 +71,11 @@ impl<'info> InitializeMember<'info> {
         Ok(())
     }
 
-    pub fn initialize_member(&mut self, bumps: InitializeMemberBumps, member_seed: u64) {
+    pub fn initialize_member(
+        &mut self,
+        bumps: InitializeMemberBumps,
+        member_seed: u64,
+    ) -> Result<()> {
         self.member.set_inner(DaoMemberState {
             member_seed,
             dao_member: self.user.key(),
@@ -83,6 +87,15 @@ impl<'info> InitializeMember<'info> {
             dao_member_balance: self.member_dao_ata.amount,
             dao_joined: self.dao.key(),
         });
+
+        // Increment member count in DAO
+        self.dao.member_count = self
+            .dao
+            .member_count
+            .checked_add(1)
+            .ok_or(ErrorCode::Overflow)?;
+
+        Ok(())
     }
 
     //Update member balance method if needed

@@ -49,4 +49,5 @@ pub struct DaoConfig {
     pub voting_model: VotingModel,
     pub reward_model: RewardModel,
     pub voting_threshold: VotingThreshold,
+    pub member_count: u64,
 }

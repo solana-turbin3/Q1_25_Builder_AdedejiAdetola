@@ -108,7 +108,7 @@ pub mod daoverse {
         ctx.accounts.validate_member()?;
 
         // Initialize member state
-        ctx.accounts.initialize_member(ctx.bumps, member_seed);
+        ctx.accounts.initialize_member(ctx.bumps, member_seed)?;
 
         // Set initial balance
         ctx.accounts.update_member_balance()?;

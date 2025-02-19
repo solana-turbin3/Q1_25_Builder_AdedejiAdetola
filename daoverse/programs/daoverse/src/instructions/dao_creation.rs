@@ -135,6 +135,7 @@ impl<'info> CreateDao<'info> {
             dao_description,
             total_proposals: 0,
             approved_proposals: 0,
+            member_count: 0,
             governance_model,
             voting_model,
             reward_model,
