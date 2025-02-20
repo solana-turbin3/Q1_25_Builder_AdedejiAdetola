@@ -30,7 +30,7 @@ pub struct InitializeDaoverse<'info> {
     )]
     pub admin_ata: InterfaceAccount<'info, TokenAccount>,
 
-    // daoverse treasury
+    // initialize daoverse treasury - ata
     #[account(
         init,
         payer = admin,
