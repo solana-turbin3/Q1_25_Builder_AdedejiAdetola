@@ -1,18 +1,18 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { AnchorEscrow } from "../target/types/anchor_escrow";
+import { Escrow } from "../target/types/escrow";
 import { BN } from "bn.js";
 import { createAssociatedTokenAccountIdempotentInstruction, createInitializeMint2Instruction, createMintToInstruction, getAssociatedTokenAddressSync, getMinimumBalanceForRentExemptMint, MINT_SIZE, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { token } from "@coral-xyz/anchor/dist/cjs/utils"
 import { randomBytes } from "crypto";
 
-describe("anchor_escrow", () => {
+describe("escrow", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
   const provider = anchor.getProvider();
 
-  const program = anchor.workspace.AnchorEscrow as Program<AnchorEscrow>;
+  const program = anchor.workspace.AnchorEscrow as Program<Escrow>;
   const maker = anchor.web3.Keypair.generate();
   const mintA = anchor.web3.Keypair.generate();
   const mintB = anchor.web3.Keypair.generate();
@@ -26,7 +26,7 @@ describe("anchor_escrow", () => {
     program.programId
   )
   const vault = getAssociatedTokenAddressSync(mintA.publicKey, escrow, true, tokenProgram)
-  
+
   it("airdrop", async () => {
     let lamports = await getMinimumBalanceForRentExemptMint(program.provider.connection);
     let tx = new anchor.web3.Transaction();
@@ -55,21 +55,21 @@ describe("anchor_escrow", () => {
         lamports,
         space: MINT_SIZE,
         programId: tokenProgram,
-      }),  
+      }),
 
-    createInitializeMint2Instruction(mintA.publicKey, 6, maker.publicKey, null, tokenProgram),
-    createAssociatedTokenAccountIdempotentInstruction(provider.publicKey, makerAtaA, maker.publicKey, mintA.publicKey, tokenProgram  ),
-    createMintToInstruction(mintA.publicKey, makerAtaA,maker.publicKey, 1e9, undefined, tokenProgram ),
-    
-    createInitializeMint2Instruction(mintB.publicKey, 6, taker.publicKey, null, tokenProgram),
-    createAssociatedTokenAccountIdempotentInstruction(provider.publicKey, takerAtaB, taker.publicKey, mintB.publicKey, tokenProgram ),                    
-    createMintToInstruction(mintB.publicKey, takerAtaB ,taker.publicKey, 1e9, undefined, tokenProgram ), 
+      createInitializeMint2Instruction(mintA.publicKey, 6, maker.publicKey, null, tokenProgram),
+      createAssociatedTokenAccountIdempotentInstruction(provider.publicKey, makerAtaA, maker.publicKey, mintA.publicKey, tokenProgram),
+      createMintToInstruction(mintA.publicKey, makerAtaA, maker.publicKey, 1e9, undefined, tokenProgram),
+
+      createInitializeMint2Instruction(mintB.publicKey, 6, taker.publicKey, null, tokenProgram),
+      createAssociatedTokenAccountIdempotentInstruction(provider.publicKey, takerAtaB, taker.publicKey, mintB.publicKey, tokenProgram),
+      createMintToInstruction(mintB.publicKey, takerAtaB, taker.publicKey, 1e9, undefined, tokenProgram),
     ];
-    
+
     console.log({
-      maker: maker.publicKey.toString(), 
-      taker: taker.publicKey.toString(), 
-      mintA: mintA.publicKey.toString(), 
+      maker: maker.publicKey.toString(),
+      taker: taker.publicKey.toString(),
+      mintA: mintA.publicKey.toString(),
       mintB: mintB.publicKey.toString(),
       makerAtaA: makerAtaA.toString(),
       takerAtaB: takerAtaB.toString()
@@ -94,12 +94,12 @@ describe("anchor_escrow", () => {
     if (makerAtaABalance.value.amount !== "1000000000") {
       throw new Error("Incorrect token balance in maker's ATA for mintA.");
     }
-  
+
   });
-  
+
   it("lets make an Escrow!", async () => {
     // Add your test here.
-    const accounts = { 
+    const accounts = {
       maker: maker.publicKey,  // The user initiating the escrow who signs the transaction. The signer must be this user, approving the transaction's terms and authorizing the transfer of funds
       mintA: mintA.publicKey,
       mintB: mintB.publicKey,
@@ -121,12 +121,12 @@ describe("anchor_escrow", () => {
       new BN(1), //big numbers, because here all numbers like seed are u64, and not able to repersent correctly in JS
       new BN(1),
     )
-    
-    .accounts({...accounts}) //.accountsStrict({})  // any one can be used
-    .signers([maker])
-    .rpc();
+
+      .accounts({ ...accounts }) //.accountsStrict({})  // any one can be used
+      .signers([maker])
+      .rpc();
     console.log("Your transaction signature", tx);
   });
 
-  
+
 });
