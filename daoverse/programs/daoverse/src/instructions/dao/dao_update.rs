@@ -13,7 +13,7 @@ pub struct UpdateDao<'info> {
         bump = dao.bump,
         constraint = dao.dao_creator == creator.key()
     )]
-    pub dao: Account<'info, DaoConfig>,
+    pub dao: Box<Account<'info, DaoConfig>>,
 }
 
 impl<'info> UpdateDao<'info> {

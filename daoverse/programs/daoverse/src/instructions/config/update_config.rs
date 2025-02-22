@@ -20,9 +20,9 @@ pub struct UpdateDaoverse<'info> {
         bump = daoverse.bump,
         has_one = daoverse_mint @ ErrorCode::Unauthorized
     )]
-    pub daoverse: Account<'info, DaoverseConfig>,
+    pub daoverse: Box<Account<'info, DaoverseConfig>>,
 
-    pub daoverse_mint: InterfaceAccount<'info, Mint>,
+    pub daoverse_mint: Box<InterfaceAccount<'info, Mint>>,
 
     // Treasury - no init since it exists
     #[account(
@@ -30,7 +30,7 @@ pub struct UpdateDaoverse<'info> {
         associated_token::mint = daoverse_mint,
         associated_token::authority = daoverse,
     )]
-    pub daoverse_treasury: InterfaceAccount<'info, TokenAccount>,
+    pub daoverse_treasury: Box<InterfaceAccount<'info, TokenAccount>>,
 
     pub token_program: Interface<'info, TokenInterface>,
 }

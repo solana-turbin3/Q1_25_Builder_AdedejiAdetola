@@ -17,7 +17,7 @@ pub struct InitializeMember<'info> {
     //member
     #[account(mut)]
     pub user: Signer<'info>,
-    pub dao_mint: InterfaceAccount<'info, Mint>,
+    pub dao_mint: Box<InterfaceAccount<'info, Mint>>,
 
     //dao member state
     #[account(
@@ -27,7 +27,7 @@ pub struct InitializeMember<'info> {
         seeds=[b"member", user.key().as_ref(), member_seed.to_le_bytes().as_ref()],
         bump,
     )]
-    pub member: Account<'info, DaoMemberState>,
+    pub member: Box<Account<'info, DaoMemberState>>,
 
     //member's dao
     #[account(
@@ -35,7 +35,7 @@ pub struct InitializeMember<'info> {
         associated_token::mint=dao_mint,
         associated_token::authority=member,
     )]
-    pub member_dao_ata: InterfaceAccount<'info, TokenAccount>,
+    pub member_dao_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     //dao
     #[account(
@@ -44,7 +44,7 @@ pub struct InitializeMember<'info> {
         seeds=[b"dao", dao.dao_creator.key().as_ref(), dao.dao_seed.to_le_bytes().as_ref()],
         bump=dao.bump,
     )]
-    pub dao: Account<'info, DaoConfig>,
+    pub dao: Box<Account<'info, DaoConfig>>,
 
     //dao treasury? - not needed since transfer is not made
     pub system_program: Program<'info, System>,
@@ -52,7 +52,7 @@ pub struct InitializeMember<'info> {
     pub token_program: Interface<'info, TokenInterface>,
 }
 
-//validate dao memeber - member_dao_ata amount greater than 100 and the mint is same as dao_mint
+//validate dao member - member_dao_ata amount greater than 100 and the mint is same as dao_mint
 
 //do i need to monitor the dao_member_balance since i can always get it from the memeber's ata.amount?
 //initialize Dao Member

@@ -12,7 +12,7 @@ pub struct InitializeDaoverse<'info> {
     // admin
     #[account(mut)]
     pub admin: Signer<'info>,
-    pub daoverse_mint: InterfaceAccount<'info, Mint>,
+    pub daoverse_mint: Box<InterfaceAccount<'info, Mint>>,
     #[account(
         init,
         payer = admin,
@@ -20,7 +20,7 @@ pub struct InitializeDaoverse<'info> {
         seeds = [b"daoverse".as_ref()],
         bump
     )]
-    pub daoverse: Account<'info, DaoverseConfig>,
+    pub daoverse: Box<Account<'info, DaoverseConfig>>,
 
     //admin ata
     #[account(
@@ -28,7 +28,7 @@ pub struct InitializeDaoverse<'info> {
         associated_token::mint=daoverse_mint,
         associated_token::authority=admin,
     )]
-    pub admin_ata: InterfaceAccount<'info, TokenAccount>,
+    pub admin_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     // initialize daoverse treasury - ata
     #[account(
@@ -37,7 +37,7 @@ pub struct InitializeDaoverse<'info> {
         associated_token::mint = daoverse_mint,
         associated_token::authority = daoverse,
     )]
-    pub daoverse_treasury: InterfaceAccount<'info, TokenAccount>,
+    pub daoverse_treasury: Box<InterfaceAccount<'info, TokenAccount>>,
 
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,

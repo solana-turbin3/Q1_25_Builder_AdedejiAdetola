@@ -14,8 +14,8 @@ pub struct CreateDao<'info> {
     //dao creator
     #[account(mut)]
     pub creator: Signer<'info>,
-    pub daoverse_mint: InterfaceAccount<'info, Mint>,
-    pub dao_mint: InterfaceAccount<'info, Mint>,
+    pub daoverse_mint: Box<InterfaceAccount<'info, Mint>>,
+    pub dao_mint: Box<InterfaceAccount<'info, Mint>>,
 
     //dao
     #[account(
@@ -25,7 +25,7 @@ pub struct CreateDao<'info> {
         seeds=[b"dao", creator.key().as_ref(), dao_seed.to_le_bytes().as_ref()],
         bump,
     )]
-    pub dao: Account<'info, DaoConfig>,
+    pub dao: Box<Account<'info, DaoConfig>>,
 
     //dao treasury - vault
     #[account(
@@ -34,7 +34,7 @@ pub struct CreateDao<'info> {
         associated_token::mint = dao_mint,
         associated_token::authority = dao,
     )]
-    pub dao_treasury: InterfaceAccount<'info, TokenAccount>,
+    pub dao_treasury: Box<InterfaceAccount<'info, TokenAccount>>,
 
     //dao creator ata dao mint
     #[account(
@@ -42,7 +42,7 @@ pub struct CreateDao<'info> {
         associated_token::mint=dao_mint,
         associated_token::authority=creator,
     )]
-    pub creator_dao_ata: InterfaceAccount<'info, TokenAccount>,
+    pub creator_dao_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     //daoverse - authority of daoverse treasury
     #[account(
@@ -51,14 +51,15 @@ pub struct CreateDao<'info> {
         seeds = [b"daoverse".as_ref()],
         bump = daoverse.bump
     )]
-    pub daoverse: Account<'info, DaoverseConfig>,
+    pub daoverse: Box<Account<'info, DaoverseConfig>>,
 
     //daoverse treasury - for paying daoverse fee
     #[account(
+        mut,
         associated_token::mint=daoverse_mint,
         associated_token::authority=daoverse
     )]
-    pub daoverse_treasury: InterfaceAccount<'info, TokenAccount>,
+    pub daoverse_treasury: Box<InterfaceAccount<'info, TokenAccount>>,
 
     //dao creator ata for daoverse mint
     #[account(
@@ -66,7 +67,7 @@ pub struct CreateDao<'info> {
         associated_token::mint=daoverse_mint,
         associated_token::authority=creator,
     )]
-    pub creator_daoverse_ata: InterfaceAccount<'info, TokenAccount>,
+    pub creator_daoverse_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -150,7 +151,7 @@ impl<'info> CreateDao<'info> {
             from: self.creator_dao_ata.to_account_info(),
             mint: self.dao_mint.to_account_info(),
             to: self.dao_treasury.to_account_info(),
-            authority: self.dao.to_account_info(),
+            authority: self.creator.to_account_info(),
         };
 
         let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
