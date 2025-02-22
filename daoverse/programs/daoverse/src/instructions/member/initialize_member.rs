@@ -29,11 +29,11 @@ pub struct InitializeMember<'info> {
     )]
     pub member: Box<Account<'info, DaoMemberState>>,
 
-    //member's dao
+    //member's dao ata
     #[account(
         mut,
         associated_token::mint=dao_mint,
-        associated_token::authority=member,
+        associated_token::authority=user,
     )]
     pub member_dao_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
