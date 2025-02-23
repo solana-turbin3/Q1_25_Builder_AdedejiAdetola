@@ -375,31 +375,6 @@ describe("DAOverse Program", () => {
     }
   });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   it("🚀 Successfully initializes a member", async () => {
     console.log("🔧 Initializing member...");
 
