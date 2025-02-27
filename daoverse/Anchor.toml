@@ -5,13 +5,16 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-daoverse = "D11BbTWnpBwXfRC3WibZwkDFhGMdbGxVHWD76DU14eJd"
+daoverse = "2DCZ8tfm5Jj4GVLyGVqygQYGsZSxrWUMYdrZT8KJ1Ad4"
+
+[programs.devnet]
+daoverse = "2DCZ8tfm5Jj4GVLyGVqygQYGsZSxrWUMYdrZT8KJ1Ad4"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "Devnet"  # Changed from Localnet to Devnet
 wallet = "~/.config/solana/id.json"
 
 [scripts]
