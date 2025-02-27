@@ -21,4 +21,20 @@ pub enum ErrorCode {
     InsufficientDaoTokens,
     #[msg("Invalid Dao mint")]
     InvalidDaoMint,
+    #[msg("Voting period has not ended yet")]
+    VotingPeriodNotEnded,
+    #[msg("Calculation error")]
+    CalculationError,
+    #[msg("Voting Period Ended")]
+    VotingPeriodEnded,
+    #[msg("Insufficient Stake")]
+    InsufficientStake,
+    #[msg("Invalid Voter")]
+    InvalidVoter,
+    #[msg("Invalid Proposal")]
+    InvalidProposal,
+    #[msg("Reward Already Claimed")]
+    RewardsAlreadyClaimed,
+    #[msg("Insufficient Funds")]
+    InsufficientFunds,
 }

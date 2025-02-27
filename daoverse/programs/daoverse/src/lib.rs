@@ -132,4 +132,59 @@ pub mod daoverse {
 
         Ok(())
     }
+
+    //proposer
+    pub fn proposal(
+        ctx: Context<Proposer>,
+        proposal_seed: u64,
+        proposal_title: String,
+        proposal_details: String,
+        proposal_cost: u64,
+        min_token_stake: u64,
+        voting_end_time: i64,
+    ) -> Result<()> {
+        // Validate creator has sufficient tokens
+        ctx.accounts.validate_proposer()?;
+
+        // Initialize Proposal
+        ctx.accounts.create_proposal(
+            ctx.bumps,
+            proposal_seed,
+            proposal_title,
+            proposal_details,
+            proposal_cost,
+            min_token_stake,
+            voting_end_time,
+        );
+
+        // ctx.accounts.finalize_proposal()?;
+
+        Ok(())
+    }
+
+    // Instruction handlers
+    pub fn vote_on_proposal(
+        ctx: Context<Voter>,
+        vote_type: VoteType,
+        tokens_to_stake: u64,
+        vote_seed: u64,
+    ) -> Result<()> {
+        // Validate voter
+        ctx.accounts.validate_voter(tokens_to_stake)?;
+
+        // Cast vote
+        ctx.accounts
+            .cast_vote(ctx.bumps, vote_type, tokens_to_stake, vote_seed)?;
+
+        Ok(())
+    }
+
+    pub fn claim_stake_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
+        ctx.accounts.finalize_proposal()?;
+
+        // Claim rewards
+        ctx.accounts.claim_rewards()?;
+
+        Ok(())
+    }
 }
