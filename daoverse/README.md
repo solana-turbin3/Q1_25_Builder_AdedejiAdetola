@@ -101,26 +101,26 @@ solana program show 2DCZ8tfm5Jj4GVLyGVqygQYGsZSxrWUMYdrZT8KJ1Ad4
 
 ### DAOverse Program Execution
 
-✔ 🚀 Initializes DAOverse (412ms)
-✔ 🛠 Updates DAOverse Config (409ms)
-✔ ❌ Fails to update config with unauthorized user (455ms)
-✔ 🚀 Creates a DAO (380ms)
-✔ 🛠 Updates DAO Config (396ms)
-✔ ❌ Fails to update DAO with unauthorized user (449ms)
-✔ 🚀 Successfully initializes a member (390ms)
-✔ ❌ Fails to initialize member with insufficient tokens (1247ms)
-✔ 🛠 Successfully updates member state (422ms)
-✔ ❌ Fails to update member state with unauthorized member (53ms)
-✔ 🚀 Successfully creates a proposal (373ms)
-✔ ❌ Fails to create proposal with invalid parameters (406ms)
-✔ 🗳️ Voter 1 successfully votes YES on the proposal (424ms)
-✔ 🗳️ Voter 2 successfully votes NO on the proposal (429ms)
-✔ ❌ Fails when voter tries to vote with insufficient tokens (891ms)
-✔ ❌ Fails when voter tries to vote twice (55ms)
-✔ 💰 Voter 1 successfully claims stake rewards (754ms)
-✔ ❌ Fails when trying to claim rewards twice (390ms)
-✔ 💰 Voter 2 successfully claims stake rewards (836ms)
-✔ ❌ Fails when unauthorized user tries to claim rewards (439ms)
+- ✔ 🚀 Initializes DAOverse (412ms)
+- ✔ 🛠 Updates DAOverse Config (409ms)
+- ✔ ❌ Fails to update config with unauthorized user (455ms)
+- ✔ 🚀 Creates a DAO (380ms)
+- ✔ 🛠 Updates DAO Config (396ms)
+- ✔ ❌ Fails to update DAO with unauthorized user (449ms)
+- ✔ 🚀 Successfully initializes a member (390ms)
+- ✔ ❌ Fails to initialize member with insufficient tokens (1247ms)
+- ✔ 🛠 Successfully updates member state (422ms)
+- ✔ ❌ Fails to update member state with unauthorized member (53ms)
+- ✔ 🚀 Successfully creates a proposal (373ms)
+- ✔ ❌ Fails to create proposal with invalid parameters (406ms)
+- ✔ 🗳️ Voter 1 successfully votes YES on the proposal (424ms)
+- ✔ 🗳️ Voter 2 successfully votes NO on the proposal (429ms)
+- ✔ ❌ Fails when voter tries to vote with insufficient tokens (891ms)
+- ✔ ❌ Fails when voter tries to vote twice (55ms)
+- ✔ 💰 Voter 1 successfully claims stake rewards (754ms)
+- ✔ ❌ Fails when trying to claim rewards twice (390ms)
+- ✔ 💰 Voter 2 successfully claims stake rewards (836ms)
+- ✔ ❌ Fails when unauthorized user tries to claim rewards (439ms)
 
 Total **20 passing tests** in **14s**. Complete execution in **16.34s**.
 
@@ -129,4 +129,3 @@ Total **20 passing tests** in **14s**. Complete execution in **16.34s**.
 ## Conclusion
 
 Daoverse provides a robust foundation for decentralized governance. With clear role-based permissions, secure proposal voting, and a staking-based incentive system, it ensures transparency and fairness in DAO operations. 🚀
-
