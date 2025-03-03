@@ -116,7 +116,7 @@ describe("DAOverse Program", () => {
 
 
   before(async () => {
-    console.log("🔄 Airdropping SOL...");
+    // console.log("🔄 Airdropping SOL...");
     const lamports = await getMinimumBalanceForRentExemptMint(provider.connection);
 
     // Airdrop to provider wallet
@@ -144,7 +144,7 @@ describe("DAOverse Program", () => {
       await provider.connection.requestAirdrop(voter2.publicKey, 5e9)
     );
 
-    console.log("✅ Creating DAOverse Mint...");
+    // console.log("✅ Creating DAOverse Mint...");
     // Split into multiple transactions to handle different signers
     // Create mints
     let tx1 = new anchor.web3.Transaction();
@@ -199,18 +199,18 @@ describe("DAOverse Program", () => {
     await provider.sendAndConfirm(tx4, [creator]);
 
 
-    console.log("🔍 Fetching Initial Treasury Balance (Expected: 0)...");
+    // console.log("🔍 Fetching Initial Treasury Balance (Expected: 0)...");
     try {
       let treasuryBalance = await provider.connection.getTokenAccountBalance(daoverseTreasury);
-      console.log(`💰 Initial Treasury Token Balance: ${treasuryBalance.value.amount}`);
+      // console.log(`💰 Initial Treasury Token Balance: ${treasuryBalance.value.amount}`);
     } catch (error) {
-      console.log("⚠️ DAOverse Treasury has no balance or does not exist yet.");
+      // console.log("⚠️ DAOverse Treasury has no balance or does not exist yet.");
     }
 
   });
 
   it("🚀 Initializes DAOverse", async () => {
-    console.log("🔧 Initializing DAOverse...");
+    // console.log("🔧 Initializing DAOverse...");
     await program.methods
       .initializeDaoverse(DAO_CREATION_FEE, ADMIN_NAME, DAOVERSE_DESCRIPTION, INITIAL_DEPOSIT)
       .accountsPartial({
@@ -226,7 +226,7 @@ describe("DAOverse Program", () => {
       .signers([admin])
       .rpc();
 
-    console.log("✅ Fetching DAOverse Config...");
+    // console.log("✅ Fetching DAOverse Config...");
     const config = await program.account.daoverseConfig.fetch(daoversePda);
 
     assert.ok(config.admin.equals(admin.publicKey));
@@ -236,16 +236,16 @@ describe("DAOverse Program", () => {
     assert.equal(config.daoverseDescription, DAOVERSE_DESCRIPTION);
     assert.equal(config.daoverseTreasuryBalance.toString(), INITIAL_DEPOSIT.toString());
 
-    console.log("🔍 Fetching Actual On-Chain Treasury Balance...");
+    // console.log("🔍 Fetching Actual On-Chain Treasury Balance...");
     let treasuryBalanceAfter = await provider.connection.getTokenAccountBalance(daoverseTreasury);
-    console.log(`💰 Actual Treasury Token Balance: ${treasuryBalanceAfter.value.amount}`);
+    // console.log(`💰 Actual Treasury Token Balance: ${treasuryBalanceAfter.value.amount}`);
 
-    console.log("✅ DAOverse Initialized Successfully!");
+    // console.log("✅ DAOverse Initialized Successfully!");
   });
 
   it("🛠 Updates DAOverse Config", async () => {
 
-    console.log("🔄 Updating DAOverse Config...");
+    // console.log("🔄 Updating DAOverse Config...");
     const newDaoCreationFee = new BN(2000);
     const newAdminName = "Updated Admin";
     const newDescription = "Updated DAOverse Description";
@@ -262,21 +262,21 @@ describe("DAOverse Program", () => {
       .signers([admin])
       .rpc();
 
-    console.log("✅ Fetching Updated DAOverse Config...");
+    // console.log("✅ Fetching Updated DAOverse Config...");
     const updatedConfig = await program.account.daoverseConfig.fetch(daoversePda);
 
     assert.equal(updatedConfig.daoCreationFee.toString(), newDaoCreationFee.toString());
     assert.equal(updatedConfig.adminName, newAdminName);
     assert.equal(updatedConfig.daoverseDescription, newDescription);
 
-    console.log("✅ DAOverse Updated Successfully!");
+    // console.log("✅ DAOverse Updated Successfully!");
   });
 
   it("❌ Fails to update config with unauthorized user", async () => {
-    console.log("🚨 Attempting Unauthorized Update...");
+    // console.log("🚨 Attempting Unauthorized Update...");
     const unauthorizedUser = anchor.web3.Keypair.generate();
 
-    console.log("🔄 Airdropping SOL to Unauthorized User...");
+    // console.log("🔄 Airdropping SOL to Unauthorized User...");
     const airdropSig = await provider.connection.requestAirdrop(unauthorizedUser.publicKey, 1e9);
     await provider.connection.confirmTransaction(airdropSig);
 
@@ -296,14 +296,14 @@ describe("DAOverse Program", () => {
       assert.fail("🚨 Unauthorized update should have failed!");
     } catch (error) {
       assert.include(error.message, "Unauthorized");
-      console.log("✅ Unauthorized update was correctly rejected.");
+      // console.log("✅ Unauthorized update was correctly rejected.");
     }
   });
 
 
   it("🚀 Creates a DAO", async () => {
 
-    console.log("🔧 Initializing DAO...");
+    // console.log("🔧 Initializing DAO...");
     await program.methods
       .initializeDao(
         new BN(1),
@@ -336,18 +336,18 @@ describe("DAOverse Program", () => {
       .signers([creator])
       .rpc();
 
-    console.log("✅ Fetching DAO Config...");
+    // console.log("✅ Fetching DAO Config...");
     const InitDaoConfig = await program.account.daoConfig.fetch(daoPda);
 
     assert.ok(InitDaoConfig.daoCreator.equals(creator.publicKey));
     assert.ok(InitDaoConfig.daoMint.equals(daoMint.publicKey));
     assert.equal(InitDaoConfig.daoName, DAO_NAME);
     assert.equal(InitDaoConfig.daoDescription, DAO_DESCRIPTION);
-    console.log("✅ DAO Initialized Successfully!");
+    // console.log("✅ DAO Initialized Successfully!");
   });
 
   it("🛠 Updates DAO Config", async () => {
-    console.log("🔄 Updating DAO Config...");
+    // console.log("🔄 Updating DAO Config...");
     const newDaoName = "Updated DAO Name";
     const newDaoDescription = "Updated DAO Description";
     await program.methods
@@ -371,23 +371,23 @@ describe("DAOverse Program", () => {
       .signers([creator])
       .rpc();
 
-    console.log("✅ Fetching Updated DAO Config...");
+    // console.log("✅ Fetching Updated DAO Config...");
     const updatedDaoConfig = await program.account.daoConfig.fetch(daoPda);
 
     assert.equal(updatedDaoConfig.daoName, newDaoName);
     assert.equal(updatedDaoConfig.daoDescription, newDaoDescription);
 
-    console.log("✅ DAO Updated Successfully!");
+    // console.log("✅ DAO Updated Successfully!");
   });
 
   it("❌ Fails to update DAO with unauthorized user", async () => {
     const unauthorizedCreator = anchor.web3.Keypair.generate();
 
-    console.log("🔄 Airdropping SOL to Unauthorized User...");
+    // console.log("🔄 Airdropping SOL to Unauthorized User...");
     const airdropSig = await provider.connection.requestAirdrop(unauthorizedCreator.publicKey, 1e9);
     await provider.connection.confirmTransaction(airdropSig);
 
-    console.log("🚨 Attempting Unauthorized DAO Update...");
+    // console.log("🚨 Attempting Unauthorized DAO Update...");
 
     try {
       await program.methods
@@ -422,12 +422,12 @@ describe("DAOverse Program", () => {
         error.message.includes("constraint"),
         "Expected an error related to unauthorized access"
       );
-      console.log("✅ Unauthorized update was correctly rejected.");
+      // console.log("✅ Unauthorized update was correctly rejected.");
     }
   });
 
   it("🚀 Successfully initializes a member", async () => {
-    console.log("🔧 Initializing member...");
+    // console.log("🔧 Initializing member...");
 
     try {
       await program.methods
@@ -445,7 +445,7 @@ describe("DAOverse Program", () => {
         .signers([member])
         .rpc();
 
-      console.log("✅ Fetching member state...");
+      // console.log("✅ Fetching member state...");
       const memberState = await program.account.daoMemberState.fetch(memberPda);
 
       assert.ok(memberState.daoMember.equals(member.publicKey));
@@ -455,7 +455,7 @@ describe("DAOverse Program", () => {
       assert.ok(memberState.daoJoined.equals(daoPda));
       assert.equal(memberState.daoMemberBalance.toString(), MEMBER_MIN_TOKENS.toString());
 
-      console.log("✅ Member initialized successfully!");
+      // console.log("✅ Member initialized successfully!");
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -465,7 +465,7 @@ describe("DAOverse Program", () => {
   it("❌ Fails to initialize member with insufficient tokens", async () => {
     const poorMember = anchor.web3.Keypair.generate();
 
-    console.log("🔄 Setting up poor member account...");
+    // console.log("🔄 Setting up poor member account...");
     await provider.connection.confirmTransaction(
       await provider.connection.requestAirdrop(poorMember.publicKey, 1e9)
     );
@@ -529,12 +529,12 @@ describe("DAOverse Program", () => {
         error.message.includes("constraint"),
         "Expected an error related to unauthorized access"
       );
-      console.log("✅ Correctly rejected member with insufficient tokens");
+      // console.log("✅ Correctly rejected member with insufficient tokens");
     }
   });
 
   it("🛠 Successfully updates member state", async () => {
-    console.log("🔄 Updating member state...");
+    // console.log("🔄 Updating member state...");
 
     try {
       await program.methods
@@ -551,7 +551,7 @@ describe("DAOverse Program", () => {
         .signers([member])
         .rpc();
 
-      console.log("✅ Fetching updated member state...");
+      // console.log("✅ Fetching updated member state...");
       const updatedMemberState = await program.account.daoMemberState.fetch(memberPda);
 
       assert.equal(updatedMemberState.createdProposals.toString(), "1");
@@ -559,7 +559,7 @@ describe("DAOverse Program", () => {
       assert.equal(updatedMemberState.totalRewards.toString(), "100");
       assert.equal(updatedMemberState.totalVotes.toString(), "5");
 
-      console.log("✅ Member state updated successfully!");
+      // console.log("✅ Member state updated successfully!");
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -569,7 +569,7 @@ describe("DAOverse Program", () => {
   it("❌ Fails to update member state with unauthorized member", async () => {
     const unauthorizedUser = anchor.web3.Keypair.generate();
 
-    console.log("🔄 Attempting unauthorized update...");
+    // console.log("🔄 Attempting unauthorized update...");
     try {
       await program.methods
         .updateMember(
@@ -598,12 +598,12 @@ describe("DAOverse Program", () => {
         "Expected an error related to unauthorized access"
       );
 
-      console.log("✅ Correctly rejected unauthorized update");
+      // console.log("✅ Correctly rejected unauthorized update");
     }
   });
 
   it("🚀 Successfully creates a proposal", async () => {
-    console.log("🔧 Creating a new proposal...");
+    // console.log("🔧 Creating a new proposal...");
 
     try {
       await program.methods
@@ -628,7 +628,7 @@ describe("DAOverse Program", () => {
         .signers([member])
         .rpc();
 
-      console.log("✅ Fetching proposal state...");
+      // console.log("✅ Fetching proposal state...");
       const proposalState = await program.account.proposalState.fetch(proposalPda);
 
       assert.ok(proposalState.proposalOwner.equals(member.publicKey));
@@ -640,7 +640,7 @@ describe("DAOverse Program", () => {
       assert.equal(proposalState.voteCountYes.toString(), "0");
       assert.equal(proposalState.voteCountNo.toString(), "0");
 
-      console.log("✅ Proposal created successfully!");
+      // console.log("✅ Proposal created successfully!");
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -648,7 +648,7 @@ describe("DAOverse Program", () => {
   });
 
   it("❌ Fails to create proposal with invalid parameters", async () => {
-    console.log("🔄 Attempting to create invalid proposal...");
+    // console.log("🔄 Attempting to create invalid proposal...");
 
     const invalidProposalSeed = new BN(2);
     const invalidProposalPda = anchor.web3.PublicKey.findProgramAddressSync(
@@ -701,12 +701,12 @@ describe("DAOverse Program", () => {
         error.message.includes("constraint"),
         "Expected an error related to invalid parameters"
       );
-      console.log("✅ Correctly rejected invalid proposal parameters");
+      // console.log("✅ Correctly rejected invalid proposal parameters");
     }
   });
 
   it("🗳️ Voter 1 successfully votes YES on the proposal", async () => {
-    console.log("🔄 Voter 1 voting on proposal...");
+    // console.log("🔄 Voter 1 voting on proposal...");
 
     const tokensToStake = new BN(100e6);
 
@@ -735,7 +735,7 @@ describe("DAOverse Program", () => {
         .signers([voter1])
         .rpc();
 
-      console.log("✅ Fetching vote record...");
+      // console.log("✅ Fetching vote record...");
       const voteRecord = await program.account.voteState.fetch(voter1VoteRecord);
 
       assert.ok(voteRecord.voter.equals(voter1.publicKey));
@@ -744,12 +744,12 @@ describe("DAOverse Program", () => {
       assert.equal(voteRecord.tokensStaked.toString(), tokensToStake.toString());
       assert.equal(voteRecord.claimed, false);
 
-      console.log("✅ Fetching updated proposal state...");
+      // console.log("✅ Fetching updated proposal state...");
       const proposalState = await program.account.proposalState.fetch(proposalPda);
       assert.equal(proposalState.voteCountYes.toString(), "1");
       assert.equal(proposalState.voteCountNo.toString(), "0");
 
-      console.log("✅ Voter 1 voted successfully!");
+      // console.log("✅ Voter 1 voted successfully!");
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -757,7 +757,7 @@ describe("DAOverse Program", () => {
   });
 
   it("🗳️ Voter 2 successfully votes NO on the proposal", async () => {
-    console.log("🔄 Voter 2 voting on proposal...");
+    // console.log("🔄 Voter 2 voting on proposal...");
 
     const tokensToStake = new BN(150e6);
 
@@ -783,7 +783,7 @@ describe("DAOverse Program", () => {
         .signers([voter2])
         .rpc();
 
-      console.log("✅ Fetching vote record...");
+      // console.log("✅ Fetching vote record...");
       const voteRecord = await program.account.voteState.fetch(voter2VoteRecord);
       assert.ok(voteRecord.voter.equals(voter2.publicKey));
       // assert.ok(voteRecord.proposal.equals(proposalPda));
@@ -791,12 +791,12 @@ describe("DAOverse Program", () => {
       assert.equal(voteRecord.tokensStaked.toString(), tokensToStake.toString());
       assert.equal(voteRecord.claimed, false);
 
-      console.log("✅ Fetching updated proposal state...");
+      // console.log("✅ Fetching updated proposal state...");
       const proposalState = await program.account.proposalState.fetch(proposalPda);
       assert.equal(proposalState.voteCountYes.toString(), "1"); // First voter's stake
       assert.equal(proposalState.voteCountNo.toString(), '1');
 
-      console.log("✅ Voter 2 voted successfully!");
+      // console.log("✅ Voter 2 voted successfully!");
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -804,7 +804,7 @@ describe("DAOverse Program", () => {
   });
 
   it("❌ Fails when voter tries to vote with insufficient tokens", async () => {
-    console.log("🔄 Attempting to vote with insufficient tokens...");
+    // console.log("🔄 Attempting to vote with insufficient tokens...");
 
     const poorVoter = anchor.web3.Keypair.generate();
     await provider.connection.confirmTransaction(
@@ -878,12 +878,12 @@ describe("DAOverse Program", () => {
         error.message.includes("constraint"),
         "Expected an error related to insufficient tokens"
       );
-      console.log("✅ Correctly rejected vote with insufficient tokens");
+      // console.log("✅ Correctly rejected vote with insufficient tokens");
     }
   });
 
   it("❌ Fails when voter tries to vote twice", async () => {
-    console.log("🔄 Attempting to vote twice...");
+    // console.log("🔄 Attempting to vote twice...");
 
     const voteSeed = new BN(4);
     const duplicateVoteRecord = anchor.web3.PublicKey.findProgramAddressSync(
@@ -927,19 +927,19 @@ describe("DAOverse Program", () => {
         error.message.includes("constraint"),
         "Expected an error related to duplicate voting"
       );
-      console.log("✅ Correctly rejected duplicate vote");
+      // console.log("✅ Correctly rejected duplicate vote");
     }
   });
 
   // This test requires a wait until voting period ends
   it("💰 Voter 1 successfully claims stake rewards", async () => {
-    console.log("🔄 Fast-forwarding past voting end time (simulated)...");
+    // console.log("🔄 Fast-forwarding past voting end time (simulated)...");
 
     // In a real blockchain we'd wait for the time to pass
     // For testing, we'll just assume the voting has ended
     // VOTING_END_TIME = new BN(Math.floor(Date.now() / 1000) - 86400);
     // Add funds to DAO treasury
-    console.log("🔄 Adding funds to DAO treasury...");
+    // console.log("🔄 Adding funds to DAO treasury...");
     const treasuryAmount = 500e6; // 500 tokens with 6 decimals
     await provider.sendAndConfirm(
       new anchor.web3.Transaction().add(
@@ -957,7 +957,7 @@ describe("DAOverse Program", () => {
     // Ensure staking vault has sufficient tokens for base reward
     const stakingAmount = await provider.connection.getTokenAccountBalance(stakingVaultPda);
     if (parseInt(stakingAmount.value.amount) < 100e6) {
-      console.log("🔄 Adding funds to staking vault...");
+      // console.log("🔄 Adding funds to staking vault...");
       await provider.sendAndConfirm(
         new anchor.web3.Transaction().add(
           createMintToInstruction(
@@ -975,15 +975,15 @@ describe("DAOverse Program", () => {
     // Check balances before claim
     const treasuryBalance = await provider.connection.getTokenAccountBalance(daoTreasury);
     const stakingBalance = await provider.connection.getTokenAccountBalance(stakingVaultPda);
-    console.log(`Treasury balance: ${treasuryBalance.value.amount}`);
-    console.log(`Staking vault balance: ${stakingBalance.value.amount}`);
+    // console.log(`Treasury balance: ${treasuryBalance.value.amount}`);
+    // console.log(`Staking vault balance: ${stakingBalance.value.amount}`);
 
 
-    console.log("🔄 Claiming rewards for Voter 1...");
+    // console.log("🔄 Claiming rewards for Voter 1...");
 
     // Get initial balance
     const initialBalance = await provider.connection.getTokenAccountBalance(voter1DaoAta);
-    console.log(`Initial token balance: ${initialBalance.value.amount}`);
+    // console.log(`Initial token balance: ${initialBalance.value.amount}`);
 
     try {
       await program.methods
@@ -1006,7 +1006,7 @@ describe("DAOverse Program", () => {
 
       // Get updated balance
       const updatedBalance = await provider.connection.getTokenAccountBalance(voter1DaoAta);
-      console.log(`Updated token balance: ${updatedBalance.value.amount}`);
+      // console.log(`Updated token balance: ${updatedBalance.value.amount}`);
 
       // Verify the tokens were returned to the voter
       assert(
@@ -1018,7 +1018,7 @@ describe("DAOverse Program", () => {
       const updatedVoteRecord = await program.account.voteState.fetch(voter1VoteRecord);
       assert.equal(updatedVoteRecord.claimed, true);
 
-      console.log("✅ Rewards claimed successfully!");
+      // console.log("✅ Rewards claimed successfully!");
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -1027,7 +1027,7 @@ describe("DAOverse Program", () => {
   });
 
   it("❌ Fails when trying to claim rewards twice", async () => {
-    console.log("🔄 Attempting to claim rewards again...");
+    // console.log("🔄 Attempting to claim rewards again...");
 
     try {
       await program.methods
@@ -1056,14 +1056,14 @@ describe("DAOverse Program", () => {
         error.message.includes("constraint"),
         "Expected an error related to already claimed rewards"
       );
-      console.log("✅ Correctly rejected duplicate reward claim");
+      // console.log("✅ Correctly rejected duplicate reward claim");
     }
   });
 
   it("💰 Voter 2 successfully claims stake rewards", async () => {
 
     // Add funds to DAO treasury
-    console.log("🔄 Adding funds to DAO treasury...");
+    // console.log("🔄 Adding funds to DAO treasury...");
     const treasuryAmount = 500e6; // 500 tokens with 6 decimals
     await provider.sendAndConfirm(
       new anchor.web3.Transaction().add(
@@ -1081,7 +1081,7 @@ describe("DAOverse Program", () => {
     // Ensure staking vault has sufficient tokens for base reward
     const stakingAmount = await provider.connection.getTokenAccountBalance(stakingVaultPda);
     if (parseInt(stakingAmount.value.amount) < 100e6) {
-      console.log("🔄 Adding funds to staking vault...");
+      // console.log("🔄 Adding funds to staking vault...");
       await provider.sendAndConfirm(
         new anchor.web3.Transaction().add(
           createMintToInstruction(
@@ -1099,13 +1099,13 @@ describe("DAOverse Program", () => {
     // Check balances before claim
     const treasuryBalance = await provider.connection.getTokenAccountBalance(daoTreasury);
     const stakingBalance = await provider.connection.getTokenAccountBalance(stakingVaultPda);
-    console.log(`Treasury balance: ${treasuryBalance.value.amount}`);
-    console.log(`Staking vault balance: ${stakingBalance.value.amount}`);
-    console.log("🔄 Claiming rewards for Voter 2...");
+    // console.log(`Treasury balance: ${treasuryBalance.value.amount}`);
+    // console.log(`Staking vault balance: ${stakingBalance.value.amount}`);
+    // console.log("🔄 Claiming rewards for Voter 2...");
 
     // Get initial balance
     const initialBalance = await provider.connection.getTokenAccountBalance(voter2DaoAta);
-    console.log(`Initial token balance: ${initialBalance.value.amount}`);
+    // console.log(`Initial token balance: ${initialBalance.value.amount}`);
 
     try {
       await program.methods
@@ -1128,7 +1128,7 @@ describe("DAOverse Program", () => {
 
       // Get updated balance
       const updatedBalance = await provider.connection.getTokenAccountBalance(voter2DaoAta);
-      console.log(`Updated token balance: ${updatedBalance.value.amount}`);
+      // console.log(`Updated token balance: ${updatedBalance.value.amount}`);
 
       // Verify the tokens were returned to the voter
       assert(
@@ -1140,7 +1140,7 @@ describe("DAOverse Program", () => {
       const updatedVoteRecord = await program.account.voteState.fetch(voter2VoteRecord);
       assert.equal(updatedVoteRecord.claimed, true);
 
-      console.log("✅ Rewards claimed successfully!");
+      // console.log("✅ Rewards claimed successfully!");
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -1148,7 +1148,7 @@ describe("DAOverse Program", () => {
   });
 
   it("❌ Fails when unauthorized user tries to claim rewards", async () => {
-    console.log("🔄 Attempting to claim rewards by unauthorized user...");
+    // console.log("🔄 Attempting to claim rewards by unauthorized user...");
 
     const unauthorizedUser = anchor.web3.Keypair.generate();
     await provider.connection.confirmTransaction(
@@ -1182,7 +1182,7 @@ describe("DAOverse Program", () => {
         error.message.includes("constraint"),
         "Expected an error related to unauthorized access"
       );
-      console.log("✅ Correctly rejected unauthorized reward claim");
+      // console.log("✅ Correctly rejected unauthorized reward claim");
     }
   });
 });
